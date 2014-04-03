@@ -12,11 +12,11 @@ import java.util.Date;
 public class WifiSensor implements Authenticated, Data {
 
     /**
-     * Unique string that identifies this WifiSensor and its location.
+     * Unique string that identifies this WifiSense and its location.
      */
     private String position;
     /**
-     * The token with which the WifiSensor authenticates itself to the server.
+     * The token with which the WifiSense authenticates itself to the server.
      */
     private String tokenHash;
     /**

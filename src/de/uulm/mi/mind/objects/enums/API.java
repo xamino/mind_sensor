@@ -73,7 +73,7 @@ public enum API implements Task {
     ADMIN_ANNIHILATE_USER,
     TOGGLE_ADMIN,
     /**
-     * Updates the list of devices for a given WifiSensor.
+     * Updates the list of devices for a given WifiSense.
      */
     WIFI_SENSOR_UPDATE,
     /**
