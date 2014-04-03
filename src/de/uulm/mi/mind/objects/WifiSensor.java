@@ -1,7 +1,5 @@
 package de.uulm.mi.mind.objects;
 
-import de.uulm.mi.mind.security.Authenticated;
-
 import java.util.Date;
 
 /**

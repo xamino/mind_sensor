@@ -1,8 +1,6 @@
 package de.uulm.mi.mind.sensor;
 
-import de.uulm.mi.mind.json.JsonConverter;
 import de.uulm.mi.mind.logger.Messenger;
-import de.uulm.mi.mind.objects.WifiSensor;
 
 /**
  * @author Tamino Hartmann
@@ -16,13 +14,13 @@ public class WifiSense implements Runnable {
      */
     private Messenger log;
     /**
-     * Instance of JsonConverter for server communication.
-     */
-    private JsonConverter json;
-    /**
      * Time between scans.
      */
     private final long SLEEP_TIME;
+    /**
+     * Tag for logging with log.
+     */
+    private final String TAG = "WifiSense";
 
     /**
      * Constructor. Sets the sleep time, gets important instances, and prepares the connection to the server.
@@ -31,13 +29,15 @@ public class WifiSense implements Runnable {
      */
     public WifiSense(long sleepTime) {
         log = Messenger.getInstance();
-        json = JsonConverter.getInstance();
-        // todo register json types
-        json.registerType(WifiSensor.class);
         // set defaults
         SLEEP_TIME = sleepTime;
+
+        log.log(TAG, "Created.");
     }
 
+    /**
+     * Executing function that runs every SLEEP_TIME ms. Contains all the important logic.
+     */
     @Override
     public void run() {
         while (true) {
@@ -45,6 +45,8 @@ public class WifiSense implements Runnable {
             try {
                 Thread.sleep(SLEEP_TIME);
             } catch (InterruptedException e) {
+                // todo do the correct thing here (which is... ?)
+                log.error(TAG, "Interrupted!!!");
                 e.printStackTrace();
             }
         }
