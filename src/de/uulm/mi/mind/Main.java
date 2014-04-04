@@ -4,9 +4,16 @@ import de.uulm.mi.mind.sensor.WifiSense;
 
 public class Main {
 
-    private static final String HELP = "To run, start the program with these values:\n\n" +
-            "java -jar mind_sensor <server_ip> <sensor_name> <sensor_password> [<interval_seconds>]" +
-            "\n";
+    private static final String HELP = "" +
+            "This program scans via monitor mode and reports all devices' IP and their perceived\n" +
+            "strength to the server. All data is temporary and not stored!\n\n" +
+            "The following values can be set (defaults shown in []):\n" +
+            " – ip=[127.0.0.1:8080] :: The IP address and port of the server.\n" +
+            " – name=[test]         :: The username of the sensor to login with.\n" +
+            " – password=[test]     :: The password to use.\n" +
+            " – sleep=[5]           :: Time in seconds between scans.\n" +
+            " – help                :: Prints this text.\n\n" +
+            "Project: MIND      Author: Tamino Hartmann";
     private static final String DEFAULT = "NOTE: Running program with default values! Try the option " +
             "<help> to see what values can be set.";
     private static final String PARSE = "Failed to parse values! Must be of format \"<name>=<value>\"!";
@@ -39,8 +46,6 @@ public class Main {
         WifiSense sensorThread = new WifiSense(ip, name, password, sleep);
         new Thread(sensorThread).run();
         // todo make sure no memory leaks are taking place
-        // finally
-        System.out.println("Terminating program.");
     }
 
     /**
@@ -57,7 +62,7 @@ public class Main {
         for (String argument : args) {
             if (argument.equals("help")) {
                 System.out.println(HELP);
-                continue;
+                return false;
             }
             String[] keyValuePair = argument.split("=");
             if (keyValuePair.length != 2) {
