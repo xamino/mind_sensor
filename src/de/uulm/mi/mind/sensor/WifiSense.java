@@ -4,7 +4,8 @@ import de.uulm.mi.mind.logger.Messenger;
 import de.uulm.mi.mind.objects.Data;
 import de.uulm.mi.mind.objects.WifiSensor;
 import de.uulm.mi.mind.objects.enums.API;
-import de.uulm.mi.mind.objects.messages.Success;
+import de.uulm.mi.mind.objects.messages.*;
+import de.uulm.mi.mind.objects.messages.Error;
 import de.uulm.mi.mind.remote.RemoteConnection;
 
 /**
@@ -34,10 +35,10 @@ public class WifiSense implements Runnable {
     /**
      * Constructor. Sets the sleep time, gets important instances, and prepares the connection to the server.
      *
-     * @param ip
-     * @param name
-     * @param password
-     * @param sleepTime
+     * @param ip        The server IP to use.
+     * @param name      The login name of the wifisensor.
+     * @param password  The login password of the wifisensor.
+     * @param sleepTime The time in seconds between scans and consequent upload to the server.
      */
     public WifiSense(String ip, String name, String password, int sleepTime) {
         // get instances
@@ -62,7 +63,13 @@ public class WifiSense implements Runnable {
                 break;
             }
             log.log(TAG, "Beginning scan...");
+
             // todo implement
+            Data test = connection.runTask(API.WIFI_SENSOR_UPDATE, new Error(Error.Type.NULL, "Not implemented yet!"), session);
+            if (!(test instanceof Success)) {
+                log.log(TAG, "Returned "+test.toString());
+            }
+
             log.log(TAG, "Finished scan.");
             try {
                 Thread.sleep(SLEEP_TIME);
@@ -70,8 +77,10 @@ public class WifiSense implements Runnable {
                 // todo do the correct thing here (which is... ?)
                 log.error(TAG, "Interrupted!!!");
                 e.printStackTrace();
+                break;
             }
         }
+        connection.runTask(API.LOGOUT, null, session);
         log.log(TAG, "Terminated.");
     }
 

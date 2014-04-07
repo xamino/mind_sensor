@@ -11,8 +11,9 @@ public class Main {
             " – ip=[127.0.0.1:8080] :: The IP address and port of the server.\n" +
             " – name=[test]         :: The username of the sensor to login with.\n" +
             " – password=[test]     :: The password to use.\n" +
-            " – sleep=[5]           :: Time in seconds between scans.\n" +
+            " – sleep=[15]          :: Time in seconds between scans.\n" +
             " – help                :: Prints this text.\n\n" +
+            "Example: java -jar mind_sensor.jar sleep=35 password=439578744\n\n" +
             "Project: MIND      Author: Tamino Hartmann";
     private static final String DEFAULT = "NOTE: Running program with default values! Try the option " +
             "<help> to see what values can be set.";
@@ -34,7 +35,7 @@ public class Main {
     /**
      * Default sleep time in seconds.
      */
-    private static int sleep = 5;
+    private static int sleep = 15;
 
     public static void main(String[] args) {
         // check whether we can set valid parameters
@@ -42,6 +43,10 @@ public class Main {
             return;
         }
         System.out.println("Beginning program.");
+
+        // todo can we set up the monitoring stuff here?
+        // then we wouldn't need external scripts...
+
         // start & run scanning service
         WifiSense sensorThread = new WifiSense(ip, name, password, sleep);
         new Thread(sensorThread).run();
@@ -57,6 +62,7 @@ public class Main {
     private static boolean setupArguments(String[] args) {
         if (args.length == 0) {
             System.out.println(DEFAULT);
+            return true;
         }
         // parse arguments and offer help
         for (String argument : args) {
@@ -81,8 +87,8 @@ public class Main {
                 case "ip":
                     ip = value;
                     break;
-                case "interval":
-                    sleep = Integer.getInteger(value);
+                case "sleep":
+                    sleep = Integer.parseInt(value);
                 default:
                     System.out.println(UNKNOWN);
             }
