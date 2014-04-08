@@ -1,4 +1,4 @@
-#on begin
+#on begin (NOT ON LAPTOP — DOESN'T WORK WITH -I in tcpdump)
 AP=$(iwconfig mon0)
 if [ "$AP" = '' ]; then
 	sudo ifconfig wlan0 down
@@ -18,4 +18,7 @@ if [ "$A" = '' ]; then
 fi
 
 # do this every cycle
+# ONLY THIS NEEDED ON MY LAPTOP
 sudo tcpdump -l -en -i mon0 dst host 134.60.70.249 -I
+# leave away 'e' - prints MAC address (we don't need that)
+# 
