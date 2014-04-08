@@ -2,10 +2,7 @@ package de.uulm.mi.mind.remote;
 
 import de.uulm.mi.mind.json.JsonConverter;
 import de.uulm.mi.mind.logger.Messenger;
-import de.uulm.mi.mind.objects.Arrival;
-import de.uulm.mi.mind.objects.Data;
-import de.uulm.mi.mind.objects.Departure;
-import de.uulm.mi.mind.objects.WifiSensor;
+import de.uulm.mi.mind.objects.*;
 import de.uulm.mi.mind.objects.enums.API;
 import de.uulm.mi.mind.objects.messages.Error;
 import de.uulm.mi.mind.objects.messages.Success;
@@ -47,6 +44,7 @@ public class RemoteConnection {
         json.registerType(WifiSensor.class);
         json.registerType(Arrival.class);
         json.registerType(Departure.class);
+        json.registerType(SensedDevice.class);
         json.registerType(Success.class);
         json.registerType(Error.class);
         // set variables
@@ -93,13 +91,13 @@ public class RemoteConnection {
             return ((Departure) responseData).getObject();
         } catch (ClientProtocolException e) {
             log.error(TAG, "Protocol exception!");
-            // e.printStackTrace();
+            e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
             log.error(TAG, "Encoding exception!");
-            // e.printStackTrace();
+            e.printStackTrace();
         } catch (IOException e) {
             log.error(TAG, "Failed request! Check your URL!");
-            // e.printStackTrace();
+            e.printStackTrace();
         }
         return new Error(Error.Type.CONNECTION, "Connection to server failed!");
     }

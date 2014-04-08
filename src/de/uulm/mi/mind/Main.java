@@ -8,10 +8,12 @@ public class Main {
             "This program scans via monitor mode and reports all devices' IP and their perceived\n" +
             "strength to the server. All data is temporary and not stored!\n\n" +
             "The following values can be set (defaults shown in []):\n" +
-            " – ip=[127.0.0.1:8080] :: The IP address and port of the server.\n" +
+            " – ip=[127.0.0.1:]     :: The IP address of the server.\n" +
+            " – port=[8080]         :: The port of the server.\n" +
             " – name=[test]         :: The username of the sensor to login with.\n" +
             " – password=[test]     :: The password to use.\n" +
             " – sleep=[15]          :: Time in seconds between scans.\n" +
+            " – interface=[wlan0]   :: The interface to use for scanning.\n" +
             " – help                :: Prints this text.\n\n" +
             "Example: java -jar mind_sensor.jar sleep=35 password=439578744\n\n" +
             "Project: MIND      Author: Tamino Hartmann";
@@ -23,7 +25,15 @@ public class Main {
     /**
      * Standard IP.
      */
-    private static String ip = "127.0.0.1:8080";
+    private static String ip = "127.0.0.1";
+    /**
+     * Standard port of the server.
+     */
+    private static String port = "8080";
+    /**
+     * Standard interface used to scan.
+     */
+    private static String interfaceDevice = "wlan0";
     /**
      * Default name.
      */
@@ -48,7 +58,7 @@ public class Main {
         // then we wouldn't need external scripts...
 
         // start & run scanning service
-        WifiSense sensorThread = new WifiSense(ip, name, password, sleep);
+        WifiSense sensorThread = new WifiSense(name, password, ip, port, interfaceDevice, sleep);
         new Thread(sensorThread).run();
         // todo make sure no memory leaks are taking place
     }
@@ -87,8 +97,15 @@ public class Main {
                 case "ip":
                     ip = value;
                     break;
+                case "port":
+                    port = value;
+                    break;
                 case "sleep":
                     sleep = Integer.parseInt(value);
+                    break;
+                case "interface":
+                    interfaceDevice = value;
+                    break;
                 default:
                     System.out.println(UNKNOWN);
             }
