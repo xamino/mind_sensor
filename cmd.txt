@@ -1,0 +1,21 @@
+#on begin
+AP=$(iwconfig mon0)
+if [ "$AP" = '' ]; then
+	sudo ifconfig wlan0 down
+	sudo airmon-ng start wlan0 6
+	sudo iwconfig mon0 channel 6
+fi
+
+# what's this?
+A=$(pidof tshark)
+if [ "$A" = '' ]; then
+		AP=$(iwconfig mon0)
+		if [ "$AP" = '' ]; then
+				sudo ifconfig wlan0 down
+				sudo airmon-ng start wlan0 6
+		fi
+		sudo tshark -i mon0 -R ip.dst==134.60.70.249 -T fields -E separator=? -e wlan.sa -e radiotap.dbm_antsignal -e ip.src 
+fi
+
+# do this every cycle
+sudo tcpdump -l -en -i mon0 dst host 134.60.70.249 -I
