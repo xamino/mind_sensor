@@ -1,10 +1,21 @@
-#on begin (NOT ON LAPTOP — DOESN'T WORK WITH -I in tcpdump)
+#on begin (NOT ON LAPTOP — DOESN'T WORK WITH -I in tcpdump) (and now it does? wtf)
 AP=$(iwconfig mon0)
 if [ "$AP" = '' ]; then
 	sudo ifconfig wlan0 down
 	sudo airmon-ng start wlan0 6
 	sudo iwconfig mon0 channel 6
 fi
+
+# do this every cycle
+# ONLY THIS NEEDED ON MY LAPTOP (or not? =( )
+# TODO: reading the continous output doesn't work (even though it should)
+#       might need to look into writing the output to a shared file which
+#       you can read from the java program... :P
+sudo tcpdump -l -en -i mon0 dst host 134.60.70.249 -I
+# leave away 'e' - prints MAC address (we don't need that)
+# 
+
+UNKNOWN
 
 # what's this?
 A=$(pidof tshark)
@@ -16,9 +27,3 @@ if [ "$A" = '' ]; then
 		fi
 		sudo tshark -i mon0 -R ip.dst==134.60.70.249 -T fields -E separator=? -e wlan.sa -e radiotap.dbm_antsignal -e ip.src 
 fi
-
-# do this every cycle
-# ONLY THIS NEEDED ON MY LAPTOP
-sudo tcpdump -l -en -i mon0 dst host 134.60.70.249 -I
-# leave away 'e' - prints MAC address (we don't need that)
-# 
