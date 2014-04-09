@@ -41,10 +41,16 @@ public enum API implements Task {
     AREA_ADD,
     AREA_UPDATE,
     AREA_REMOVE,
+    // Display
     DISPLAY_READ,
     DISPLAY_ADD,
     DISPLAY_UPDATE,
     DISPLAY_REMOVE,
+    // Sensor
+    SENSOR_READ,
+    SENSOR_ADD,
+    SENSOR_UPDATE,
+    SENSOR_REMOVE,
     /**
      * Given a location, find the position.
      */
@@ -71,9 +77,13 @@ public enum API implements Task {
      * Removes all users from the database and restores the default admin
      */
     ADMIN_ANNIHILATE_USER,
+    /**
+     * Returns a list of all Active objects currently within the system.
+     */
+    ADMIN_READ_SESSIONS,
     TOGGLE_ADMIN,
     /**
-     * Updates the list of devices for a given WifiSense.
+     * Updates the list of devices for a given WifiSensor.
      */
     WIFI_SENSOR_UPDATE,
     /**
