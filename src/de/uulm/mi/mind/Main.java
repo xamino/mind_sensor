@@ -54,6 +54,7 @@ public class Main {
         if (!setupArguments(args)) {
             return;
         }
+        // todo use log
         System.out.println("Beginning program.");
 
         // todo can we set up the monitoring stuff here?
@@ -66,6 +67,7 @@ public class Main {
         new Thread(sensorThread).start();
         new Thread(senderThread).start();
         // todo make sure no memory leaks are taking place
+        // todo sensible thread handling for when something goes wrong... :P
         System.out.println("Started all services.");
     }
 
