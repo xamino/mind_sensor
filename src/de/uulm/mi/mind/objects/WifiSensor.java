@@ -18,7 +18,7 @@ public class WifiSensor implements Authenticated, Data {
      */
     private String tokenHash;
     /**
-     * Last time the sensor logged in.
+     * Last time the threads logged in.
      */
 
     private Date lastAccess;

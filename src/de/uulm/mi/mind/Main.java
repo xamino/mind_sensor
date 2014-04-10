@@ -1,21 +1,23 @@
 package de.uulm.mi.mind;
 
-import de.uulm.mi.mind.sensor.WifiSense;
+import de.uulm.mi.mind.threads.SenderThread;
+import de.uulm.mi.mind.threads.WifiThread;
 
 public class Main {
 
     private static final String HELP = "" +
-            "This program scans via monitor mode and reports all devices' IP and their perceived\n" +
-            "strength to the server. All data is temporary and not stored!\n\n" +
+            "This program scans via monitor mode and reports all devices' IP and their" +
+            " perceived strength to the server. All data is temporary and not stored! Note" +
+            " that the program must be run with root rights (so sudo it or su it)!\n\n" +
             "The following values can be set (defaults shown in []):\n" +
             " – ip=[127.0.0.1:]     :: The IP address of the server.\n" +
             " – port=[8080]         :: The port of the server.\n" +
-            " – name=[test]         :: The username of the sensor to login with.\n" +
+            " – name=[test]         :: The username of the threads to login with.\n" +
             " – password=[test]     :: The password to use.\n" +
             " – sleep=[15]          :: Time in seconds between scans.\n" +
             " – interface=[wlan0]   :: The interface to use for scanning.\n" +
             " – help                :: Prints this text.\n\n" +
-            "Example: java -jar mind_sensor.jar sleep=35 password=439578744\n\n" +
+            "Example: sudo java -jar mind_sensor.jar sleep=35 password=439578744\n\n" +
             "Project: MIND      Author: Tamino Hartmann";
     private static final String DEFAULT = "NOTE: Running program with default values! Try the option " +
             "<help> to see what values can be set.";
@@ -57,10 +59,14 @@ public class Main {
         // todo can we set up the monitoring stuff here?
         // then we wouldn't need external scripts...
 
-        // start & run scanning service
-        WifiSense sensorThread = new WifiSense(name, password, ip, port, interfaceDevice, sleep);
-        new Thread(sensorThread).run();
+        // scanning service
+        WifiThread sensorThread = new WifiThread(ip, port, interfaceDevice);
+        // communication service
+        SenderThread senderThread = new SenderThread(name, password, ip, port, sleep);
+        new Thread(sensorThread).start();
+        new Thread(senderThread).start();
         // todo make sure no memory leaks are taking place
+        System.out.println("Started all services.");
     }
 
     /**
