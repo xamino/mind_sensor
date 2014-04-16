@@ -7,7 +7,6 @@ import de.uulm.mi.mind.objects.SensedDevice;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 /**
  * @author Tamino Hartmann
@@ -24,7 +23,7 @@ public class WifiThread implements Runnable {
      * Tag for logging with log.
      */
     private final String TAG = "WifiSense";
-    private final String TCPDUMP_CMD;
+    private final String SNIFFING_CMD;
     private static DataList<SensedDevice> devices = new DataList<>();
     private final String name;
 
@@ -39,8 +38,10 @@ public class WifiThread implements Runnable {
         log = Messenger.getInstance();
         // set vars
         this.name = name;
-        // TCPDUMP_CMD = "tcpdump -l -n -i " + device + " -I 'dst host " + ip + " && tcp port " + port + "'";
-        TCPDUMP_CMD = "tshark -i " + device + " -R ip.dst==" + ip + " -R tcp.port==" + port;
+        // SNIFFING_CMD = "tcpdump -l -n -i " + device + " -I 'dst host " + ip + " && tcp port " + port + "'";
+        // todo read level data
+        // fix parsing to work
+        SNIFFING_CMD = "tshark -i " + device + " -R ip.dst==" + ip + " -R tcp.port==" + port;
         log.log(TAG, "Created.");
     }
 
@@ -51,13 +52,14 @@ public class WifiThread implements Runnable {
     public void run() {
         try {
             // create new tcpdump process
-            Process tcpdumpProcess = Runtime.getRuntime().exec(TCPDUMP_CMD);
+            Process tcpdumpProcess = Runtime.getRuntime().exec(SNIFFING_CMD);
             BufferedReader br = new BufferedReader(new InputStreamReader(tcpdumpProcess.getInputStream()));
             String line;
 
             while (true) {
                 line = br.readLine();
                 if (line != null) {
+                    // todo need to filter out multiples somewhere – here or on devicepull?
                     devices.add(readDevice(line));
                 } else {
                     // log.log(TAG, "Sensed nothing...");
@@ -70,12 +72,17 @@ public class WifiThread implements Runnable {
         }
     }
 
+    /**
+     * Method that reads each line and returns the device from it, if applicable.
+     *
+     * @param line The line to parse.
+     * @return Null or the device instance if valid.
+     */
     private SensedDevice readDevice(String line) {
         String parts[] = line.split(" ");
         int levelValue = 0;
         String ipAddress = "";
 
-        // todo maybe create sensed device when data is pulled?
         for (String part : parts) {
             // System.out.println(part);
             // todo get dB
@@ -86,7 +93,7 @@ public class WifiThread implements Runnable {
                 ipAddress = part;
             }
         }
-        System.out.println(levelValue + "::"+ipAddress);
+        System.out.println(levelValue + "::" + ipAddress);
         if (levelValue >= 0 || ipAddress.isEmpty()) {
             return null;
         }
