@@ -38,8 +38,9 @@ public class WifiThread implements Runnable {
         // get instances
         log = Messenger.getInstance();
         // set vars
-        TCPDUMP_CMD = "tcpdump -l -n -i " + device + " -I 'dst host " + ip + " && tcp port " + port + "'";
         this.name = name;
+        // TCPDUMP_CMD = "tcpdump -l -n -i " + device + " -I 'dst host " + ip + " && tcp port " + port + "'";
+        TCPDUMP_CMD = "tshark -i " + device + " -R ip.dst==" + ip + " -R tcp.port==" + port;
         log.log(TAG, "Created.");
     }
 
@@ -59,7 +60,7 @@ public class WifiThread implements Runnable {
                 if (line != null) {
                     devices.add(readDevice(line));
                 } else {
-                    log.log(TAG, "Sensed nothing...");
+                    // log.log(TAG, "Sensed nothing...");
                     // TODO: original restarted the service in this case – why?
                 }
             }
@@ -74,16 +75,18 @@ public class WifiThread implements Runnable {
         int levelValue = 0;
         String ipAddress = "";
 
-        System.out.println(line);
-
+        // todo maybe create sensed device when data is pulled?
         for (String part : parts) {
-            System.out.println(part);
+            // System.out.println(part);
+            // todo get dB
             if (part.endsWith("dB")) {
                 levelValue = Integer.parseInt(part.substring(0, part.length() - 2));
             } else if (part.startsWith("134.60.")) {
-                ipAddress = part.substring(0, part.lastIndexOf("."));
+                // works!
+                ipAddress = part;
             }
         }
+        System.out.println(levelValue + "::"+ipAddress);
         if (levelValue >= 0 || ipAddress.isEmpty()) {
             return null;
         }
