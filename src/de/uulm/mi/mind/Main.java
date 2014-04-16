@@ -61,7 +61,7 @@ public class Main {
         // then we wouldn't need external scripts...
 
         // scanning service
-        WifiThread sensorThread = new WifiThread(ip, port, interfaceDevice);
+        WifiThread sensorThread = new WifiThread(ip, port, interfaceDevice, name);
         // communication service
         SenderThread senderThread = new SenderThread(name, password, ip, port, sleep);
         new Thread(sensorThread).start();

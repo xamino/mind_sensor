@@ -1,6 +1,7 @@
 package de.uulm.mi.mind.threads;
 
 import de.uulm.mi.mind.logger.Messenger;
+import de.uulm.mi.mind.objects.DataList;
 import de.uulm.mi.mind.objects.SensedDevice;
 
 import java.io.BufferedReader;
@@ -24,18 +25,21 @@ public class WifiThread implements Runnable {
      */
     private final String TAG = "WifiSense";
     private final String TCPDUMP_CMD;
-    private static ArrayList<SensedDevice> devices = new ArrayList<>();
+    private static DataList<SensedDevice> devices = new DataList<>();
+    private final String name;
 
     /**
      * Constructor. Sets the sleep time, gets important instances, and prepares the connection to the server.
      *
-     * @param ip The server IP to use.
+     * @param ip   The server IP to use.
+     * @param name Username of the sensor.
      */
-    public WifiThread(String ip, String port, String device) {
+    public WifiThread(String ip, String port, String device, String name) {
         // get instances
         log = Messenger.getInstance();
         // set vars
         TCPDUMP_CMD = "tcpdump -l -n -i " + device + " -I 'dst host " + ip + " && tcp port " + port + "'";
+        this.name = name;
         log.log(TAG, "Created.");
     }
 
@@ -83,15 +87,15 @@ public class WifiThread implements Runnable {
         if (levelValue >= 0 || ipAddress.isEmpty()) {
             return null;
         }
-        return new SensedDevice(ipAddress, levelValue);
+        return new SensedDevice(name, ipAddress, levelValue);
     }
 
     /**
      * @return
      */
-    public synchronized static ArrayList<SensedDevice> pullDevices() {
-        ArrayList<SensedDevice> push = devices;
-        devices = new ArrayList<SensedDevice>();
+    public synchronized static DataList<SensedDevice> pullDevices() {
+        DataList<SensedDevice> push = devices;
+        devices = new DataList<SensedDevice>();
         return push;
     }
 }
