@@ -2,13 +2,12 @@ package de.uulm.mi.mind.threads;
 
 import de.uulm.mi.mind.logger.Messenger;
 import de.uulm.mi.mind.objects.Data;
+import de.uulm.mi.mind.objects.DataList;
 import de.uulm.mi.mind.objects.SensedDevice;
 import de.uulm.mi.mind.objects.WifiSensor;
 import de.uulm.mi.mind.objects.enums.API;
 import de.uulm.mi.mind.objects.messages.Success;
 import de.uulm.mi.mind.remote.RemoteConnection;
-
-import java.util.ArrayList;
 
 /**
  * Created by tamino on 4/10/14.
@@ -52,11 +51,17 @@ public class SenderThread implements Runnable {
                 return;
             }
 
-            ArrayList<SensedDevice> devices = WifiThread.pullDevices();
+            DataList<SensedDevice> devices = WifiThread.pullDevices();
             if (devices.isEmpty()) {
                 log.log(TAG, "No devices found to send to server.");
             } else {
                 log.log(TAG, "Oh, there's something there!");
+                /*
+                // todo send & what to do on response
+                for (SensedDevice device : devices) {
+                    Data data = connection.runTask(API.WIFI_SENSOR_UPDATE, device, session);
+                }
+                */
             }
 
             // sleep

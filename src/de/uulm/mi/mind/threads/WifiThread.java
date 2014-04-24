@@ -1,12 +1,12 @@
 package de.uulm.mi.mind.threads;
 
 import de.uulm.mi.mind.logger.Messenger;
+import de.uulm.mi.mind.objects.DataList;
 import de.uulm.mi.mind.objects.SensedDevice;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 /**
  * @author Tamino Hartmann
@@ -23,20 +23,22 @@ public class WifiThread implements Runnable {
      * Tag for logging with log.
      */
     private final String TAG = "WifiSense";
-    private final String TCPDUMP_CMD;
-    private static ArrayList<SensedDevice> devices = new ArrayList<>();
+    private final String SNIFFING_CMD;
+    private static DataList<SensedDevice> devices = new DataList<>();
+    private final String name;
 
     /**
      * Constructor. Sets the sleep time, gets important instances, and prepares the connection to the server.
      *
      * @param ip The IP address to listen for.
      */
-    public WifiThread(String ip, String port, String device) {
+    public WifiThread(String ip, String port, String device, String name) {
         // get instances
         log = Messenger.getInstance();
         // set vars
         // TCPDUMP_CMD = "tcpdump -l -n -i " + device + " -I 'dst host " + ip + " && tcp port " + port + "'";
-        TCPDUMP_CMD = "tshark -i " + device + " -R ip.dst==" + ip + " -R tcp.port==" + port + "-T fields -E separator=? -e wlan.sa -e radiotap.dbm_antsignal -e ip.src";
+        SNIFFING_CMD = "tshark -i " + device + " -R ip.dst==" + ip + " -R tcp.port==" + port + "-T fields -E separator=? -e wlan.sa -e radiotap.dbm_antsignal -e ip.src";
+        this.name = name;
         log.log(TAG, "Created.");
     }
 
@@ -47,13 +49,14 @@ public class WifiThread implements Runnable {
     public void run() {
         try {
             // create new tcpdump process
-            Process tcpdumpProcess = Runtime.getRuntime().exec(TCPDUMP_CMD);
+            Process tcpdumpProcess = Runtime.getRuntime().exec(SNIFFING_CMD);
             BufferedReader br = new BufferedReader(new InputStreamReader(tcpdumpProcess.getInputStream()));
             String line;
 
             while (true) {
                 line = br.readLine();
                 if (line != null) {
+                    // todo need to filter out multiples somewhere – here or on devicepull?
                     devices.add(readDevice(line));
                 } else {
                     // log.log(TAG, "Sensed nothing...");
@@ -66,6 +69,12 @@ public class WifiThread implements Runnable {
         }
     }
 
+    /**
+     * Method that reads each line and returns the device from it, if applicable.
+     *
+     * @param line The line to parse.
+     * @return Null or the device instance if valid.
+     */
     private SensedDevice readDevice(String line) {
         int levelValue = 0;
         String ipAddress = "";
@@ -76,16 +85,29 @@ public class WifiThread implements Runnable {
             System.out.println(stub);
         }
 
-
-        return new SensedDevice(ipAddress, levelValue);
+        for (String part : parts) {
+            // System.out.println(part);
+            // todo get dB
+            if (part.endsWith("dB")) {
+                levelValue = Integer.parseInt(part.substring(0, part.length() - 2));
+            } else if (part.startsWith("134.60.")) {
+                // works!
+                ipAddress = part;
+            }
+        }
+        System.out.println(levelValue + "::" + ipAddress);
+        if (levelValue >= 0 || ipAddress.isEmpty()) {
+            return null;
+        }
+        return new SensedDevice(name, ipAddress, levelValue);
     }
 
     /**
      * @return
      */
-    public synchronized static ArrayList<SensedDevice> pullDevices() {
-        ArrayList<SensedDevice> push = devices;
-        devices = new ArrayList<SensedDevice>();
+    public synchronized static DataList<SensedDevice> pullDevices() {
+        DataList<SensedDevice> push = devices;
+        devices = new DataList<SensedDevice>();
         return push;
     }
 }
