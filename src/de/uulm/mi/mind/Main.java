@@ -10,12 +10,13 @@ public class Main {
             " perceived strength to the server. All data is temporary and not stored! Note" +
             " that the program must be run with root rights (so sudo it or su it)!\n\n" +
             "The following values can be set (defaults shown in []):\n" +
-            " – ip=[127.0.0.1:]     :: The IP address of the server.\n" +
-            " – port=[8080]         :: The port of the server.\n" +
+            " – ip=[127.0.0.1:]     :: The IP address of the server and (if not explicitly set) the listenip.\n" +
+            " – port=[8080]         :: The port for the server communication.\n" +
             " – name=[test]         :: The username of the threads to login with.\n" +
             " – password=[test]     :: The password to use.\n" +
             " – sleep=[15]          :: Time in seconds between scans.\n" +
             " – interface=[wlan0]   :: The interface to use for scanning.\n" +
+            " – listenip=[ip]       :: If used the alternative IP to listen for.\n" +
             " – help                :: Prints this text.\n\n" +
             "Example: sudo java -jar mind_sensor.jar sleep=35 password=439578744\n\n" +
             "Project: MIND      Author: Tamino Hartmann";
@@ -25,9 +26,13 @@ public class Main {
     private static final String UNKNOWN = "Unknown key=value pair! Ignoring...";
 
     /**
-     * Standard IP.
+     * Standard server IP.
      */
-    private static String ip = "127.0.0.1";
+    private static String serverIp = "127.0.0.1";
+    /**
+     * IP to sense for (usually the same as serverIP).
+     */
+    private static String senseIp = "127.0.0.1";
     /**
      * Standard port of the server.
      */
@@ -61,9 +66,9 @@ public class Main {
         // then we wouldn't need external scripts...
 
         // scanning service
-        WifiThread sensorThread = new WifiThread(ip, port, interfaceDevice);
+        WifiThread sensorThread = new WifiThread(senseIp, port, interfaceDevice);
         // communication service
-        SenderThread senderThread = new SenderThread(name, password, ip, port, sleep);
+        SenderThread senderThread = new SenderThread(name, password, serverIp, port, sleep);
         new Thread(sensorThread).start();
         new Thread(senderThread).start();
         // todo make sure no memory leaks are taking place
@@ -93,6 +98,7 @@ public class Main {
                 System.out.println(PARSE);
                 return false;
             }
+            boolean alreadySet = false;
             argument = keyValuePair[0];
             String value = keyValuePair[1];
             switch (argument) {
@@ -103,7 +109,10 @@ public class Main {
                     password = value;
                     break;
                 case "ip":
-                    ip = value;
+                    serverIp = value;
+                    if (!alreadySet) {
+                        senseIp = value;
+                    }
                     break;
                 case "port":
                     port = value;
@@ -113,6 +122,9 @@ public class Main {
                     break;
                 case "interface":
                     interfaceDevice = value;
+                    break;
+                case "listenip":
+                    senseIp = value;
                     break;
                 default:
                     System.out.println(UNKNOWN);

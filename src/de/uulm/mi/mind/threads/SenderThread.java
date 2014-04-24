@@ -32,7 +32,7 @@ public class SenderThread implements Runnable {
     /**
      * @param name      The login name of the wifisensor.
      * @param password  The login password of the wifisensor.
-     * @param ip
+     * @param ip        The ip of the server to connect to.
      * @param port
      * @param sleepTime The time in seconds between scans and consequent upload to the server.
      */

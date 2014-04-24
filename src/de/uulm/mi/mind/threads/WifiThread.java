@@ -29,14 +29,14 @@ public class WifiThread implements Runnable {
     /**
      * Constructor. Sets the sleep time, gets important instances, and prepares the connection to the server.
      *
-     * @param ip The server IP to use.
+     * @param ip The IP address to listen for.
      */
     public WifiThread(String ip, String port, String device) {
         // get instances
         log = Messenger.getInstance();
         // set vars
         // TCPDUMP_CMD = "tcpdump -l -n -i " + device + " -I 'dst host " + ip + " && tcp port " + port + "'";
-        TCPDUMP_CMD = "tshark -i " + device + " -R ip.dst==" + ip + " -R tcp.port==" + port;
+        TCPDUMP_CMD = "tshark -i " + device + " -R ip.dst==" + ip + " -R tcp.port==" + port + "-T fields -E separator=? -e wlan.sa -e radiotap.dbm_antsignal -e ip.src";
         log.log(TAG, "Created.");
     }
 
@@ -67,25 +67,16 @@ public class WifiThread implements Runnable {
     }
 
     private SensedDevice readDevice(String line) {
-        String parts[] = line.split(" ");
         int levelValue = 0;
         String ipAddress = "";
 
         // todo maybe create sensed device when data is pulled?
-        for (String part : parts) {
-            // System.out.println(part);
-            // todo get dB
-            if (part.endsWith("dB")) {
-                levelValue = Integer.parseInt(part.substring(0, part.length() - 2));
-            } else if (part.startsWith("134.60.")) {
-                // works!
-                ipAddress = part;
-            }
+        ArrayList<String> parts = new ArrayList<>();
+        for (String stub : line.split(" ")) {
+            System.out.println(stub);
         }
-        System.out.println(levelValue + "::"+ipAddress);
-        if (levelValue >= 0 || ipAddress.isEmpty()) {
-            return null;
-        }
+
+
         return new SensedDevice(ipAddress, levelValue);
     }
 
