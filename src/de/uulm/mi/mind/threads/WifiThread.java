@@ -37,7 +37,8 @@ public class WifiThread implements Runnable {
         log = Messenger.getInstance();
         // set vars
         // TCPDUMP_CMD = "tcpdump -l -n -i " + device + " -I 'dst host " + ip + " && tcp port " + port + "'";
-        SNIFFING_CMD = "tshark -i " + device + " -R ip.dst==" + ip + " -R tcp.port==" + port + "-T fields -E separator=? -e wlan.sa -e radiotap.dbm_antsignal -e ip.src";
+        SNIFFING_CMD = "tshark -i " + device + " -R ip.dst==" + ip + " -R tcp.port==" + port + " -T fields -E separator=? -e wlan.sa -e radiotap.dbm_antsignal -e ip.src";
+        log.log(TAG, "Using CMD: " + SNIFFING_CMD);
         this.name = name;
         log.log(TAG, "Created.");
     }
@@ -75,27 +76,14 @@ public class WifiThread implements Runnable {
      * @param line The line to parse.
      * @return Null or the device instance if valid.
      */
+    // todo maybe create sensed device when data is pulled?
     private SensedDevice readDevice(String line) {
-        int levelValue = 0;
-        String ipAddress = "";
+        String[] parts = line.split("\\?");
+        // get level
+        int levelValue = Integer.parseInt(parts[1]);
+        // get ip
+        String ipAddress = parts[2];
 
-        // todo maybe create sensed device when data is pulled?
-        ArrayList<String> parts = new ArrayList<>();
-        for (String stub : line.split(" ")) {
-            System.out.println(stub);
-        }
-
-        for (String part : parts) {
-            // System.out.println(part);
-            // todo get dB
-            if (part.endsWith("dB")) {
-                levelValue = Integer.parseInt(part.substring(0, part.length() - 2));
-            } else if (part.startsWith("134.60.")) {
-                // works!
-                ipAddress = part;
-            }
-        }
-        System.out.println(levelValue + "::" + ipAddress);
         if (levelValue >= 0 || ipAddress.isEmpty()) {
             return null;
         }

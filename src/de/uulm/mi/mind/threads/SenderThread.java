@@ -40,6 +40,8 @@ public class SenderThread implements Runnable {
         SLEEP_TIME = sleepTime * 1000;
         connection = new RemoteConnection(ip + ":" + port);
         sensorUser = new WifiSensor(name, password);
+        log.log(TAG, "Sensor " + name + " connecting to " + ip + ":" + port + ".");
+        log.log(TAG, "Created.");
     }
 
     @Override
@@ -52,16 +54,12 @@ public class SenderThread implements Runnable {
             }
 
             DataList<SensedDevice> devices = WifiThread.pullDevices();
-            if (devices.isEmpty()) {
-                log.log(TAG, "No devices found to send to server.");
-            } else {
+            if (!devices.isEmpty()) {
                 log.log(TAG, "Oh, there's something there!");
-                /*
-                // todo send & what to do on response
-                for (SensedDevice device : devices) {
-                    Data data = connection.runTask(API.WIFI_SENSOR_UPDATE, device, session);
+                Data data = connection.runTask(API.WIFI_SENSOR_UPDATE, devices, session);
+                if (!(data instanceof Success)) {
+                    log.log(TAG, "Upload of data failed!");
                 }
-                */
             }
 
             // sleep
