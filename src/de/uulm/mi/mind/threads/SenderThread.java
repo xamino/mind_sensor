@@ -39,7 +39,7 @@ public class SenderThread implements Runnable {
         log = Messenger.getInstance();
         SLEEP_TIME = sleepTime * 1000;
         connection = new RemoteConnection(ip + ":" + port);
-        sensorUser = new WifiSensor(name, password);
+        sensorUser = new WifiSensor(name, password, null);
         log.log(TAG, "Sensor " + name + " connecting to " + ip + ":" + port + ".");
         log.log(TAG, "Created.");
     }

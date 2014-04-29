@@ -32,14 +32,14 @@ public class RemoteConnection {
     /**
      * Instance of JsonConverter for server communication.
      */
-    private JsonConverter json;
+    private JsonConverter<Data> json;
     private final String TAG = "RemoteConnection";
     private final String URL;
 
     public RemoteConnection(String serverIP) {
         // ready instances
         log = Messenger.getInstance();
-        json = JsonConverter.getInstance();
+        json = new JsonConverter<Data>();
         // register json types
         json.registerType(WifiSensor.class);
         json.registerType(Arrival.class);
@@ -60,7 +60,14 @@ public class RemoteConnection {
      * @return
      */
     public Data runTask(API task, Data object, String session) {
-        String requestString = json.toJson(new Arrival(session, task.toString(), object));
+        String requestString = null;
+        try {
+            requestString = json.toJson(new Arrival(session, task.toString(), object));
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error(TAG, "Failed to convert to JSON! Aborting.");
+            return new Error(Error.Type.CAST, "JSON cast failed!");
+        }
 
         try {
             HttpClient httpclient = HttpClients.createDefault();
@@ -76,15 +83,14 @@ public class RemoteConnection {
             BufferedReader in = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
             StringBuffer sb = new StringBuffer("");
             String line = "";
-            String NL = System.getProperty("line.separator");
             while ((line = in.readLine()) != null) {
-                sb.append(line + NL);
+                sb.append(line);
             }
             in.close();
             String result = sb.toString();
 
             // Convert Response from json, Should be a Departure Object
-            Data responseData = JsonConverter.getInstance().fromJson(result);
+            Data responseData = json.fromJson(result);
             if (!(responseData instanceof Departure)) {
                 return new Error(Error.Type.SERVER, "Server returned invalid response!");
             }

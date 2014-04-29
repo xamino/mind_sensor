@@ -6,7 +6,7 @@ package de.uulm.mi.mind.objects.enums;
  *         must be listed here, with collision free names. Tasks should start with the name of their module, then
  *         continue with an expressive name that describes what is done.
  */
-public enum API implements Task {
+public enum API {
     /**
      * Simply returns the object sent to the server. Can be used for various parsing tests.
      */

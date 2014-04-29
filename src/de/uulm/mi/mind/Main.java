@@ -10,7 +10,7 @@ public class Main {
             " perceived strength to the server. All data is temporary and not stored! Note" +
             " that the program must be run with root rights (so sudo it or su it)!\n\n" +
             "The following values can be set (defaults shown in []):\n" +
-            " – ip=[127.0.0.1:]     :: The IP address of the server and (if not explicitly set) the listenip.\n" +
+            " – ip=[127.0.0.1]      :: The IP address of the server and (if not explicitly set) the listenip.\n" +
             " – port=[8080]         :: The port for the server communication.\n" +
             " – name=[test]         :: The username of the threads to login with.\n" +
             " – password=[test]     :: The password to use.\n" +
@@ -59,7 +59,6 @@ public class Main {
         if (!setupArguments(args)) {
             return;
         }
-        // todo use log
         System.out.println("Beginning program.");
 
         // todo can we set up the monitoring stuff here?
@@ -69,11 +68,22 @@ public class Main {
         WifiThread sensorThread = new WifiThread(senseIp, port, interfaceDevice, name);
         // communication service
         SenderThread senderThread = new SenderThread(name, password, serverIp, port, sleep);
-        new Thread(sensorThread).start();
-        new Thread(senderThread).start();
-        // todo make sure no memory leaks are taking place
-        // todo sensible thread handling for when something goes wrong... :P
+        // create threads
+        Thread one = new Thread(sensorThread);
+        Thread two = new Thread(senderThread);
+        // start them
+        one.start();
+        two.start();
         System.out.println("Started all services.");
+        // check if one of the two goes wrong
+        // todo does this work how I think it works?
+        try {
+            one.join();
+            two.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Exiting.");
     }
 
     /**

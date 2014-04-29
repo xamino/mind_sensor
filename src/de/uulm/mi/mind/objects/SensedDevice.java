@@ -6,9 +6,12 @@ package de.uulm.mi.mind.objects;
 public class SensedDevice implements Data {
 
     private String sensor;
-
+    private String position;
     private String ipAddress;
     private int levelValue;
+
+    private SensedDevice() {
+    }
 
     public SensedDevice(String sensor, String ipAddress, int levelValue) {
         this.sensor = sensor;
@@ -16,12 +19,16 @@ public class SensedDevice implements Data {
         this.levelValue = levelValue;
     }
 
-    public String getSensor() {
-        return sensor;
+    public String getPosition() {
+        return position;
     }
 
-    public void setSensor(String sensor) {
-        this.sensor = sensor;
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public String getSensor() {
+        return sensor;
     }
 
     public int getLevelValue() {
@@ -29,16 +36,8 @@ public class SensedDevice implements Data {
         return levelValue;
     }
 
-    public void setLevelValue(int levelValue) {
-        this.levelValue = levelValue;
-    }
-
     public String getIpAddress() {
         return ipAddress;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
     }
 
     @Override

@@ -6,26 +6,40 @@ import java.util.Date;
  * @author Tamino Hartmann
  *         This class implements the user object for the wifi-sniffing program. It authenticates the sensors.
  */
-// TODO store the last tcpdump in the session or here? --> I think session would be better...
 public class WifiSensor implements Authenticated, Data {
 
     /**
-     * Unique string that identifies this WifiSense and its location.
+     * Unique string that identifies this WifiSensor.
      */
-    private String position;
+    private String identification;
     /**
-     * The token with which the WifiSense authenticates itself to the server.
+     * The Area ID of the area it is responsible for.
+     */
+    private String area;
+    /**
+     * The token with which the WifiSensor authenticates itself to the server.
      */
     private String tokenHash;
     /**
-     * Last time the threads logged in.
+     * Last time the sensor logged in.
      */
-
     private Date lastAccess;
 
-    public WifiSensor(String position, String tokenHash) {
-        this.position = position;
+    private WifiSensor() {
+    }
+
+    public WifiSensor(String identification, String tokenHash, String area) {
+        this.identification = identification;
+        this.area = area;
         this.tokenHash = tokenHash;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
     }
 
     public String getTokenHash() {
@@ -38,12 +52,21 @@ public class WifiSensor implements Authenticated, Data {
 
     @Override
     public String readIdentification() {
-        return this.position;
+        return this.identification;
     }
 
     @Override
     public String readAuthentication() {
         return this.tokenHash;
+    }
+
+    @Override
+    public String toString() {
+        return "WifiSensor{" +
+                "identification='" + identification + '\'' +
+                ", area='" + area + '\'' +
+                ", lastAccess=" + lastAccess +
+                '}';
     }
 
     @Override
@@ -58,6 +81,6 @@ public class WifiSensor implements Authenticated, Data {
 
     @Override
     public String getKey() {
-        return this.position;
+        return this.identification;
     }
 }
