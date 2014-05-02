@@ -15,7 +15,7 @@ public class Main {
             " – name=[test]         :: The username of the threads to login with.\n" +
             " – password=[test]     :: The password to use.\n" +
             " – sleep=[15]          :: Time in seconds between scans.\n" +
-            " – interface=[wlan0]   :: The interface to use for scanning.\n" +
+            " – interface=[mon0]   :: The interface to use for scanning.\n" +
             " – listenip=[ip]       :: If used the alternative IP to listen for.\n" +
             " – help                :: Prints this text.\n\n" +
             "Example: sudo java -jar mind_sensor.jar sleep=35 password=439578744\n\n" +
@@ -23,7 +23,8 @@ public class Main {
     private static final String DEFAULT = "NOTE: Running program with default values! Try the option " +
             "<help> to see what values can be set.";
     private static final String PARSE = "Failed to parse values! Must be of format \"<name>=<value>\"!";
-    private static final String UNKNOWN = "Unknown key=value pair! Ignoring...";
+    private static final String UNKNOWN = "Unknown key=value pair! Try <java -jar mind_sensor.jar help> to see " +
+            "available parameters.";
 
     /**
      * Standard server IP.
@@ -40,7 +41,7 @@ public class Main {
     /**
      * Standard interface used to scan.
      */
-    private static String interfaceDevice = "wlan0";
+    private static String interfaceDevice = "mon0";
     /**
      * Default name.
      */

@@ -87,6 +87,7 @@ public class WifiThread implements Runnable {
         if (levelValue >= 0 || ipAddress.isEmpty()) {
             return null;
         }
+        log.log(TAG, "Sensed " + ipAddress + " with strength " + levelValue + ".");
         return new SensedDevice(name, ipAddress, levelValue);
     }
 

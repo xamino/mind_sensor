@@ -48,7 +48,7 @@ public class RemoteConnection {
         json.registerType(Success.class);
         json.registerType(Error.class);
         // set variables
-        URL = "http://" + serverIP + "/Servlet";
+        URL = "http://" + serverIP + "/main";
 
         log.log(TAG, "Created.");
     }
@@ -60,16 +60,15 @@ public class RemoteConnection {
      * @return
      */
     public Data runTask(API task, Data object, String session) {
-        String requestString = null;
-        try {
-            requestString = json.toJson(new Arrival(session, task.toString(), object));
-        } catch (IOException e) {
-            e.printStackTrace();
+        String requestString = json.toJson(new Arrival(session, task.toString(), object));
+        if (requestString == null) {
             log.error(TAG, "Failed to convert to JSON! Aborting.");
             return new Error(Error.Type.CAST, "JSON cast failed!");
         }
 
-        try {
+        try
+
+        {
             HttpClient httpclient = HttpClients.createDefault();
             // create post with URL
             HttpPost httppost = new HttpPost(URL);
@@ -95,16 +94,31 @@ public class RemoteConnection {
                 return new Error(Error.Type.SERVER, "Server returned invalid response!");
             }
             return ((Departure) responseData).getObject();
-        } catch (ClientProtocolException e) {
+        } catch (
+                ClientProtocolException e
+                )
+
+        {
             log.error(TAG, "Protocol exception!");
             e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
+        } catch (
+                UnsupportedEncodingException e
+                )
+
+        {
             log.error(TAG, "Encoding exception!");
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch (
+                IOException e
+                )
+
+        {
             log.error(TAG, "Failed request! Check your URL!");
             e.printStackTrace();
         }
-        return new Error(Error.Type.CONNECTION, "Connection to server failed!");
+
+        return new
+
+                Error(Error.Type.CONNECTION, "Connection to server failed!");
     }
 }

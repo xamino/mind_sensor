@@ -10,7 +10,7 @@ import de.uulm.mi.mind.objects.messages.Success;
 import de.uulm.mi.mind.remote.RemoteConnection;
 
 /**
- * Created by tamino on 4/10/14.
+ * @author Tamino Hartmann
  */
 public class SenderThread implements Runnable {
 
@@ -60,6 +60,8 @@ public class SenderThread implements Runnable {
                 if (!(data instanceof Success)) {
                     log.log(TAG, "Upload of data failed!");
                 }
+            } else {
+                log.log(TAG, "Nothing.");
             }
 
             // sleep
