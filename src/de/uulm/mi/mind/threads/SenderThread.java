@@ -49,21 +49,18 @@ public class SenderThread implements Runnable {
         while (true) {
             //check session
             if (!checkSession()) {
-                log.error(TAG, "Session could not be established!");
-                return;
-            }
-
-            DataList<SensedDevice> devices = WifiThread.pullDevices();
-            if (!devices.isEmpty()) {
-                log.log(TAG, "Oh, there's something there!");
-                Data data = connection.runTask(API.WIFI_SENSOR_UPDATE, devices, session);
-                if (!(data instanceof Success)) {
-                    log.log(TAG, "Upload of data failed!");
-                }
+                log.error(TAG, "Session could not be established! Retrying in " + SLEEP_TIME + "ms.");
             } else {
-                log.log(TAG, "Nothing.");
+                DataList<SensedDevice> devices = WifiThread.pullDevices();
+                if (!devices.isEmpty()) {
+                    Data data = connection.runTask(API.WIFI_SENSOR_UPDATE, devices, session);
+                    if (!(data instanceof Success)) {
+                        log.log(TAG, "Upload of data failed!");
+                    } else {
+                        log.log(TAG, "Successfully reported " + devices.size() + " devices.");
+                    }
+                }
             }
-
             // sleep
             try {
                 Thread.sleep(SLEEP_TIME);

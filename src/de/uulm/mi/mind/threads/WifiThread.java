@@ -7,6 +7,7 @@ import de.uulm.mi.mind.objects.SensedDevice;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 
 /**
  * @author Tamino Hartmann
@@ -23,8 +24,17 @@ public class WifiThread implements Runnable {
      * Tag for logging with log.
      */
     private final String TAG = "WifiSense";
+    /**
+     * Stores command used to sniff for devices.
+     */
     private final String SNIFFING_CMD;
-    private static DataList<SensedDevice> devices = new DataList<>();
+    /**
+     * Stores all sensed devices uniquely.
+     */
+    private static HashMap<String, SensedDevice> devices = new HashMap<>();
+    /**
+     * Name of WifiSensor used.
+     */
     private final String name;
 
     /**
@@ -58,7 +68,8 @@ public class WifiThread implements Runnable {
                 line = br.readLine();
                 if (line != null) {
                     // todo need to filter out multiples somewhere – here or on devicepull?
-                    devices.add(readDevice(line));
+                    SensedDevice dev = readDevice(line);
+                    devices.put(dev.getIpAddress(), dev);
                 } else {
                     // log.log(TAG, "Sensed nothing...");
                     // TODO: original restarted the service in this case – why?
@@ -76,7 +87,6 @@ public class WifiThread implements Runnable {
      * @param line The line to parse.
      * @return Null or the device instance if valid.
      */
-    // todo maybe create sensed device when data is pulled?
     private SensedDevice readDevice(String line) {
         String[] parts = line.split("\\?");
         // get level
@@ -87,16 +97,20 @@ public class WifiThread implements Runnable {
         if (levelValue >= 0 || ipAddress.isEmpty()) {
             return null;
         }
-        log.log(TAG, "Sensed " + ipAddress + " with strength " + levelValue + ".");
         return new SensedDevice(name, ipAddress, levelValue);
     }
 
     /**
-     * @return
+     * Method via which external threads can get the sensor information collected.
+     *
+     * @return A DataList containing the most current version of each SensedDevice
      */
     public synchronized static DataList<SensedDevice> pullDevices() {
-        DataList<SensedDevice> push = devices;
-        devices = new DataList<SensedDevice>();
+        DataList<SensedDevice> push = new DataList<>();
+        for (SensedDevice device : devices.values()) {
+            push.add(device);
+        }
+        devices.clear();
         return push;
     }
 }

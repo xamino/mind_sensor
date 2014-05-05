@@ -13,10 +13,15 @@ public class SensedDevice implements Data {
     private SensedDevice() {
     }
 
+    public void setLevelValue(int levelValue) {
+        this.levelValue = levelValue;
+    }
+
     public SensedDevice(String sensor, String ipAddress, int levelValue) {
         this.sensor = sensor;
         this.ipAddress = ipAddress;
         this.levelValue = levelValue;
+
     }
 
     public String getPosition() {

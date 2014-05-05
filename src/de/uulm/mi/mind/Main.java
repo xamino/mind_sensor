@@ -76,15 +76,6 @@ public class Main {
         one.start();
         two.start();
         System.out.println("Started all services.");
-        // check if one of the two goes wrong
-        // todo does this work how I think it works?
-        try {
-            one.join();
-            two.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Exiting.");
     }
 
     /**
