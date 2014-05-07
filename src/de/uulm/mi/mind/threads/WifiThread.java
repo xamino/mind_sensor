@@ -67,12 +67,8 @@ public class WifiThread implements Runnable {
             while (true) {
                 line = br.readLine();
                 if (line != null) {
-                    // todo need to filter out multiples somewhere – here or on devicepull?
                     SensedDevice dev = readDevice(line);
                     devices.put(dev.getIpAddress(), dev);
-                } else {
-                    // log.log(TAG, "Sensed nothing...");
-                    // TODO: original restarted the service in this case – why?
                 }
             }
         } catch (IOException e) {
