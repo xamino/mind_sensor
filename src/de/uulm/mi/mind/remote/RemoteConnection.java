@@ -77,6 +77,8 @@ public class RemoteConnection {
             //Execute and get the response.
             HttpResponse response = httpclient.execute(httppost);
             HttpEntity responseEntity = response.getEntity();
+            // todo should i do this?
+            // httppost.releaseConnection();
 
             // read response
             BufferedReader in = new BufferedReader(new InputStreamReader(responseEntity.getContent()));

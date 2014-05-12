@@ -46,6 +46,7 @@ public class WifiThread implements Runnable {
         // get instances
         log = Messenger.getInstance();
         // set vars
+        // todo use tcpdump + change parsing to fit
         // TCPDUMP_CMD = "tcpdump -l -n -i " + device + " -I 'dst host " + ip + " && tcp port " + port + "'";
         SNIFFING_CMD = "tshark -i " + device + " -R ip.dst==" + ip + " -R tcp.port==" + port + " -T fields -E separator=? -e wlan.sa -e radiotap.dbm_antsignal -e ip.src";
         log.log(TAG, "Using CMD: " + SNIFFING_CMD);
